@@ -1,0 +1,47 @@
+.player-name-header {
+    text-align: center;
+    margin: 0.5em
+}
+
+.player-name {
+    display: flex;
+    flex-direction: column;
+    padding-top: 1em;
+    text-align: center;
+}
+
+
+.team-toggle-item {
+    cursor: pointer;
+    flex: 1;
+    text-align: center;
+    border: 0.5px black solid;
+}
+
+.team-toggle-item-selected {
+    cursor: pointer;
+    flex: 1;
+    text-align: center;
+    background-color: rgb(225, 223, 223);
+    border: 1px black solid;
+}
+
+.team-toggle-item:hover {
+    background-color: rgb(225, 223, 223);
+    border: 1px black solid;
+}
+
+.player-submit {
+    text-align: center;
+}
+
+.start-button {
+    border: 1px black solid;
+    padding: 4px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.start-button:hover {
+    background-color: rgba(219, 39, 39, 0.291);
+}

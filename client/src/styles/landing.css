@@ -1,0 +1,18 @@
+.new-game {
+    text-align: center;
+    margin: auto;
+    padding: 1em;
+    border: 1px black solid;
+    cursor: pointer;
+}
+
+.new-game:hover {
+    background-color: #e6e6e6;
+}
+
+.game-id {
+    display: flex;
+    flex-direction: column;
+    padding-top: 1em;
+    text-align: center;
+}
