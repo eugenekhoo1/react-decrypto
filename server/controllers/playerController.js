@@ -14,8 +14,8 @@ async function addPlayer(req, res) {
 
   if (checkPlayers.rows[0][teamCol].length < 4) {
     if (
-      checkPlayers.rows[0].team1_players.includes(player) ||
-      checkPlayers.rows[0].team2_players.includes(player)
+      checkPlayers.rows[0][team1_players].includes(player) ||
+      checkPlayers.rows[0][team2_players].includes(player)
     ) {
       return res.status(400).json({ message: "Player already exists!" });
     }

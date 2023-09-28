@@ -77,6 +77,8 @@ export default function Player() {
   };
 
   const handleStart = async (e) => {
+    e.preventDefault();
+
     try {
       const response = await axios.post(
         `/game/startgame`,
