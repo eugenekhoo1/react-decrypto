@@ -32,9 +32,6 @@ async function getGame(req, res) {
   const gid = parseInt(req.params.gid);
   try {
     const response = await query(`SELECT * FROM games WHERE game_id=$1`, [gid]);
-    if (response.rowCount === 0) {
-      return res.status(400).json({ message: "Game ID does not exist" });
-    }
     return res.status(200).send(response.rows);
   } catch (err) {
     console.error(err);

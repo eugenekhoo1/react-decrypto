@@ -27,6 +27,17 @@ export default function Player() {
     });
   }, [socket]);
 
+  useEffect(() => {
+    socket.on("received-add-player", (data) => {
+      console.log(data);
+      if (data.team === 1) {
+        setTeam1Players([...team1Players, data.player]);
+      } else {
+        setTeam2Players([...team2Players, data.player]);
+      }
+    });
+  }, [socket]);
+
   const getGameInfo = async () => {
     const response = await axios.get(`/game/getgame/${gid}`);
     setTeam1Players(response.data[0].team1_players);
@@ -53,6 +64,13 @@ export default function Player() {
       );
       setUser({ player, team, gid });
       sessionStorage.setItem("user", JSON.stringify({ player, team, gid }));
+
+      if (team === 1) {
+        setTeam1Players([...team1Players, player]);
+      } else {
+        setTeam2Players([...team2Players, player]);
+      }
+      socket.emit("add-player", { gid, player, team });
     } catch (err) {
       alert(err.response.data.message);
     }

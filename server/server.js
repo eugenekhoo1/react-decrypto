@@ -39,6 +39,10 @@ const responseStatus = {
 io.on("connection", (socket) => {
   console.log(`User Connected: ${socket.id}`);
 
+  socket.on("add-player", (data) => {
+    socket.broadcast.emit("received-add-player", data);
+  });
+
   socket.on("start-game", (data) => {
     socket.broadcast.emit("received-start-game", data);
   });
