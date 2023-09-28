@@ -1,7 +1,7 @@
 const allowedOrigins = [
   "http://localhost:5000",
   "http://localhost:3000",
-  "https://react-decrypto.vercel.app",
+  "https://react-twitter-clone-gilt.vercel.app",
 ];
 
 module.exports = allowedOrigins;
