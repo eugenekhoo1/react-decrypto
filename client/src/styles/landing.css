@@ -1,3 +1,8 @@
+.logo {
+    max-width: 20%;
+    height: auto
+}
+
 .new-game {
     text-align: center;
     margin: auto;
