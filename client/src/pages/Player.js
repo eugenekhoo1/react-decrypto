@@ -198,9 +198,9 @@ export default function Player() {
         </div>
       ) : gameStatus === "In Progress" ? (
         <Navigate to={`/encrypt/${gid}`} replace={true} />
-      ) : (
+      ) : gameStatus === "Completed" ? (
         <Navigate to={`/`} replace={true} />
-      )}
+      ) : null}
     </>
   );
 }

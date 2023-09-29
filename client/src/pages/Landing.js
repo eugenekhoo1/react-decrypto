@@ -13,7 +13,9 @@ export default function Landing() {
   const [gameId, setGameId] = useState(null);
   const [player, setPlayer] = useState(null);
 
-  const handleNewGame = async () => {
+  const handleNewGame = async (e) => {
+    e.preventDefault();
+
     try {
       const response = await axios.get(`/game/newgame`);
       navigate(`/addplayer/${response.data[0].game_id}`);
