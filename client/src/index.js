@@ -4,6 +4,7 @@ import "./index.css";
 import App from "./App";
 import { BrowserRouter } from "react-router-dom";
 import { UserProvider } from "./context/UserProvider";
+import Footer from "./components/Footer";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -11,6 +12,7 @@ root.render(
     <BrowserRouter>
       <UserProvider>
         <App />
+        <Footer />
       </UserProvider>
     </BrowserRouter>
   </React.StrictMode>
