@@ -33,7 +33,7 @@ export default function Encryptor({ code, words, round, checkSubmitted }) {
         { headers: { "Content-Type": "application/json" } }
       );
       setSubmitted(true);
-      socket.emit("clue-submitted", { team: user.team });
+      socket.emit("clue-submitted", { gid: user.gid, team: user.team });
     } catch (err) {
       console.error(err);
     }

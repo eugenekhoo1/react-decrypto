@@ -37,27 +37,40 @@ const responseStatus = {
 };
 
 io.on("connection", (socket) => {
-  console.log(`User Connected: ${socket.id}`);
+  socket.on("join-room", (data) => {
+    // Joins room and leaves all other rooms
+    socket.join(data.gid);
+    socket.rooms.forEach((room) => {
+      if (/^\d+$/.test(room) && room !== data.gid) {
+        socket.leave(room);
+      }
+    });
+    console.log(`${socket.id} has joined room ${data.gid}`);
+  });
 
   socket.on("add-player", (data) => {
-    socket.broadcast.emit("received-add-player", data);
+    console.log(`add-player: ${data.player}`);
+    socket.to(data.gid).emit("received-add-player", data);
   });
 
   socket.on("start-game", (data) => {
-    socket.broadcast.emit("received-start-game", data);
+    console.log(`received-start-game:`, data.gid);
+    socket.to(data.gid).emit("received-start-game", data);
   });
 
   socket.on("next-round", (data) => {
-    socket.broadcast.emit("received-next-round", data);
+    console.log(`received-next-round:`, data.gid);
+    socket.to(data.gid).emit("received-next-round", data);
   });
 
   socket.on("clue-submitted", (data) => {
+    console.log(`received-clue:`);
     clueStatus[`team${data.team}`] = true;
-    checkClueAndEmit();
+    checkClueAndEmit(data.gid);
   });
 
   socket.on("decode-submitted", (data) => {
-    console.log(data.score);
+    console.log(`score: ${data.score}, team: ${data.team}`);
 
     if (data.score > scoreStatus.score) {
       scoreStatus.score = data.score;
@@ -66,14 +79,14 @@ io.on("connection", (socket) => {
     responseStatus[`team${data.team}`] = true;
 
     if (scoreStatus.score > 1 && responseStatus.team1 && responseStatus.team2) {
-      endGame();
+      endGame(data.gid);
     } else {
-      checkDecodeAndEmit();
+      checkDecodeAndEmit(data.gid);
     }
   });
 
   socket.on("intercept-submitted", (data) => {
-    console.log(data.score);
+    console.log(`score: ${data.score}, team: ${data.team}`);
 
     if (data.score > scoreStatus.score) {
       scoreStatus.score = data.score;
@@ -82,47 +95,51 @@ io.on("connection", (socket) => {
     responseStatus[`team${data.team}`] = true;
 
     if (scoreStatus.score > 1 && responseStatus.team1 && responseStatus.team2) {
-      endGame();
+      endGame(data.gid);
     } else {
-      checkInterceptAndEmit();
+      checkInterceptAndEmit(data.gid);
     }
   });
 
   socket.on("complete-game", (data) => {
-    socket.broadcast.emit("received-complete-game", data);
+    console.log(`received-complete-game:`, data.gid);
+    socket.to(data.gid).emit("received-complete-game", data);
   });
 
-  const checkClueAndEmit = () => {
+  const checkClueAndEmit = (gid) => {
+    console.log(`checking clue`);
     if (clueStatus.team1 && clueStatus.team2) {
-      io.emit("received-clues", clueStatus);
+      console.log(`received-clues`);
+      io.to(gid).emit("received-clues", clueStatus);
       clueStatus.team1 = false;
       clueStatus.team2 = false;
     }
   };
 
-  const checkInterceptAndEmit = () => {
+  const checkInterceptAndEmit = (gid) => {
     console.log(`checking intercept`);
     if (scoreStatus.score < 2 && responseStatus.team1 && responseStatus.team2) {
-      io.emit("received-intercept");
+      console.log(`received-intercept`);
+      io.to(gid).emit("received-intercept");
       responseStatus.team1 = false;
       responseStatus.team2 = false;
       scoreStatus.score = 0;
     }
   };
 
-  const checkDecodeAndEmit = () => {
+  const checkDecodeAndEmit = (gid) => {
     console.log(`checking decode`);
     if (scoreStatus.score < 2 && responseStatus.team1 && responseStatus.team2) {
-      io.emit("received-decode");
+      io.to(gid).emit("received-decode");
       responseStatus.team1 = false;
       responseStatus.team2 = false;
       scoreStatus.score = 0;
     }
   };
 
-  const endGame = () => {
+  const endGame = (gid) => {
     console.log(`ending game`);
-    io.emit("received-end-game");
+    io.to(gid).emit("received-end-game");
     responseStatus.team1 = false;
     responseStatus.team2 = false;
     scoreStatus.score = 0;

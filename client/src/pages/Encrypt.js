@@ -7,6 +7,7 @@ import socket from "../api/socket";
 import TeamClues from "../cards/TeamClues";
 import Header from "../components/Header";
 import Scoreboard from "../cards/Scoreboard";
+import JoinRoom from "../utils/JoinRoom";
 
 export default function Encrypt() {
   const { user } = useUser();
@@ -22,6 +23,7 @@ export default function Encrypt() {
   const [teamClues, setTeamClues] = useState([]);
 
   useEffect(() => {
+    JoinRoom(user.gid);
     getGameInfo();
     getRoundInfo();
     getClues();

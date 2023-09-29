@@ -4,6 +4,7 @@ import axios from "../api/axios";
 import socket from "../api/socket";
 import "../styles/player.css";
 import useUser from "../hooks/useUser";
+import JoinRoom from "../utils/JoinRoom";
 import PlayerList from "../cards/PlayerList";
 
 export default function Player() {
@@ -18,6 +19,7 @@ export default function Player() {
   const [gameStatus, setGameStatus] = useState(null);
 
   useEffect(() => {
+    JoinRoom(gid);
     getGameInfo();
   }, []);
 
@@ -25,17 +27,25 @@ export default function Player() {
     socket.on("received-start-game", (data) => {
       navigate(`/encrypt/${data.gid}`);
     });
-  }, [socket]);
 
-  useEffect(() => {
     socket.on("received-add-player", (data) => {
-      console.log(data);
       if (data.team === 1) {
-        setTeam1Players([...team1Players, data.player]);
+        setTeam1Players((prevTeam1Players) => [
+          ...prevTeam1Players,
+          data.player,
+        ]);
       } else {
-        setTeam2Players([...team2Players, data.player]);
+        setTeam2Players((prevTeam2Players) => [
+          ...prevTeam2Players,
+          data.player,
+        ]);
       }
     });
+
+    return () => {
+      socket.off("received-start-game");
+      socket.off("received-add-player");
+    };
   }, [socket]);
 
   const getGameInfo = async () => {
@@ -64,13 +74,18 @@ export default function Player() {
       );
       setUser({ player, team, gid });
       sessionStorage.setItem("user", JSON.stringify({ player, team, gid }));
+      socket.emit("join-room", {
+        gid: gid,
+        player: user.player,
+        team: user.team,
+      });
 
       if (team === 1) {
         setTeam1Players([...team1Players, player]);
       } else {
         setTeam2Players([...team2Players, player]);
       }
-      socket.emit("add-player", { gid, player, team });
+      socket.emit(`add-player`, { gid, player, team });
     } catch (err) {
       alert(err.response.data.message);
     }
@@ -95,12 +110,12 @@ export default function Player() {
   return (
     <>
       {gameStatus === "Not Started" ? (
-        <div className="container">
+        <div className="container mt-4">
           <div className="container">
             <div className="row justify-content-center">Game ID: {gid}</div>
             <form onSubmit={handleSubmit}>
               <div className="row justify-content-center">
-                <div className="col-3">
+                <div className="col-7 col-md-3">
                   <div className="player-name">
                     <span>Player Name: </span>
                     <input
@@ -119,7 +134,7 @@ export default function Player() {
               <div className="row justify-content-center">
                 <div className="player-name-header">Team</div>
 
-                <div className="col-1 p-0">
+                <div className="col-3 col-md-1 p-0">
                   <div
                     className={
                       team === 1
@@ -133,7 +148,7 @@ export default function Player() {
                     1
                   </div>
                 </div>
-                <div className="col-1 p-0">
+                <div className="col-3 col-md-1 p-0">
                   <div
                     className={
                       team === 2
@@ -174,7 +189,7 @@ export default function Player() {
           </div>
 
           <div className="row justify-content-center">
-            <div className="col-3">
+            <div className="col-3 col-md-2">
               <div className="start-button" onClick={handleStart}>
                 Start
               </div>
@@ -183,7 +198,9 @@ export default function Player() {
         </div>
       ) : gameStatus === "In Progress" ? (
         <Navigate to={`/encrypt/${gid}`} replace={true} />
-      ) : null}
+      ) : (
+        <Navigate to={`/`} replace={true} />
+      )}
     </>
   );
 }

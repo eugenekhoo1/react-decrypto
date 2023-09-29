@@ -5,10 +5,15 @@ import socket from "../api/socket";
 import Scoreboard from "../cards/Scoreboard";
 import Header from "../components/Header";
 import useUser from "../hooks/useUser";
+import JoinRoom from "../utils/JoinRoom";
 
 export default function PostRound() {
   const { user } = useUser();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    JoinRoom(user.gid);
+  }, []);
 
   useEffect(() => {
     socket.on("received-next-round", (data) => {

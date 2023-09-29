@@ -6,6 +6,7 @@ import OppTeamClues from "../cards/OppTeamClues";
 import Header from "../components/Header";
 import useUser from "../hooks/useUser";
 import Scoreboard from "../cards/Scoreboard";
+import JoinRoom from "../utils/JoinRoom";
 
 export default function Intercept() {
   const { user } = useUser();
@@ -18,6 +19,7 @@ export default function Intercept() {
   const [oppTeamClues, setOppTeamClues] = useState([]);
 
   useEffect(() => {
+    JoinRoom(user.gid);
     getGameInfo();
     getRoundInfo();
     getClues();

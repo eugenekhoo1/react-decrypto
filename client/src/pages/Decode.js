@@ -5,6 +5,7 @@ import Clue from "../components/Clue";
 import useUser from "../hooks/useUser";
 import Header from "../components/Header";
 import Scoreboard from "../cards/Scoreboard";
+import JoinRoom from "../utils/JoinRoom";
 
 export default function Decode() {
   const { user } = useUser();
@@ -17,6 +18,7 @@ export default function Decode() {
   const [decoder, setDecoder] = useState([]);
 
   useEffect(() => {
+    JoinRoom(user.gid);
     getGameInfo();
     getRoundInfo();
   }, []);

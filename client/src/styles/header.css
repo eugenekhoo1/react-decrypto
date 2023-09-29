@@ -1,0 +1,9 @@
+.refresh-btn {
+    border: 1px black solid;
+    padding: 0.2em;
+    cursor: pointer;
+}
+
+.refresh-btn:hover {
+    background-color: #e6e6e6;
+}

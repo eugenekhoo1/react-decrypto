@@ -73,7 +73,11 @@ export default function Clue({
       );
       setResponseSubmitted(true);
       alert(submitResponse.data.message);
-      socket.emit(event, { team: user.team, score: submitResponse.data.score });
+      socket.emit(event, {
+        gid: user.gid,
+        team: user.team,
+        score: submitResponse.data.score,
+      });
     } catch (err) {
       console.error(err);
     }

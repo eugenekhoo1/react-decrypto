@@ -4,10 +4,15 @@ import axios from "../api/axios";
 import socket from "../api/socket";
 import useUser from "../hooks/useUser";
 import Scoreboard from "../cards/Scoreboard";
+import JoinRoom from "../utils/JoinRoom";
 
 export default function PostGame() {
   const { user } = useUser();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    JoinRoom(user.gid);
+  }, []);
 
   useEffect(() => {
     socket.on("received-complete-game", (data) => {

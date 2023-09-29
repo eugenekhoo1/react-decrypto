@@ -30,7 +30,6 @@ export default function Landing() {
       alert("Game ID does not exist");
       return;
     }
-
     if (response.data[0].status === "Not Started") {
       navigate(`/addplayer/${gameId}`);
     } else if (response.data[0].status === "Completed") {
@@ -78,7 +77,7 @@ export default function Landing() {
 
       <form onSubmit={handleSubmit}>
         <div className="row justify-content-center mt-2">
-          <div className="col-6 text-center">
+          <div className="col-7 text-center">
             <span>Game ID: </span>
             <input
               type="text"
@@ -92,7 +91,7 @@ export default function Landing() {
           </div>
         </div>
         <div className="row justify-content-center mt-2">
-          <div className="col-6 text-center">
+          <div className="col-7 text-center">
             <span>Player Name: </span>
             <input
               type="text"
@@ -114,7 +113,7 @@ export default function Landing() {
       <div className="row justify-content-center mt-3">or start a new game</div>
 
       <div className="row justify-content-center mt-2">
-        <div className="col-6">
+        <div className="col-5 col-md-3">
           <div className="new-game" onClick={handleNewGame}>
             New Game
           </div>

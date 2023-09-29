@@ -30,7 +30,7 @@ export default function Scoreboard() {
   };
 
   return (
-    <div className="container">
+    <div className="container mt-4">
       <div className="row mt-3">
         <div
           className="col text-center"
