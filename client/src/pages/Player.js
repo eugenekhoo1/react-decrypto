@@ -72,23 +72,25 @@ export default function Player() {
         JSON.stringify({ gid, player, team }),
         { headers: { "Content-Type": "application/json" } }
       );
-      setUser({ player, team, gid });
-      sessionStorage.setItem("user", JSON.stringify({ player, team, gid }));
-      socket.emit("join-room", {
-        gid: gid,
-        player: user.player,
-        team: user.team,
-      });
-
-      if (team === 1) {
-        setTeam1Players([...team1Players, player]);
-      } else {
-        setTeam2Players([...team2Players, player]);
-      }
-      socket.emit(`add-player`, { gid, player, team });
     } catch (err) {
-      alert(err.response.data.message);
+      alert(err.response ? err.response.data.message : "An error occurred");
+      return;
     }
+
+    setUser({ player, team, gid });
+    sessionStorage.setItem("user", JSON.stringify({ player, team, gid }));
+    socket.emit("join-room", {
+      gid: gid,
+      player: player,
+      team: team,
+    });
+
+    if (team === 1) {
+      setTeam1Players([...team1Players, player]);
+    } else {
+      setTeam2Players([...team2Players, player]);
+    }
+    socket.emit(`add-player`, { gid, player, team });
   };
 
   const handleStart = async (e) => {

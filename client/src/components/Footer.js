@@ -1,6 +1,6 @@
 export default function Footer() {
   return (
-    <div className="container mt-5">
+    <div className="container position-fixed bottom-0 start-50 translate-middle-x">
       <div className="row">
         <div className="col-12 text-center">
           <a
