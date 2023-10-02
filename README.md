@@ -6,6 +6,7 @@ Learn how to play decrypto at: https://www.ultraboardgames.com/decrypto/game-rul
 
 Frontend Libraries:
 
+- bootstrap
 - axios
 - socket.io-client
 
