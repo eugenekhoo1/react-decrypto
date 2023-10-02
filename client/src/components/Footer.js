@@ -6,6 +6,7 @@ export default function Footer() {
           <a
             href="https://github.com/eugenekhoo1/react-decrypto"
             style={{ cursor: "pointer" }}
+            target="_blank"
           >
             Visit Github Repo
           </a>

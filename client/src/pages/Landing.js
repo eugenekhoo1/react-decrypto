@@ -80,7 +80,11 @@ export default function Landing() {
       <div className="row mt-3">
         <span className="text-center">
           Learn how to play{" "}
-          <a href="https://www.ultraboardgames.com/decrypto/game-rules.php">
+          <a
+            href="https://www.ultraboardgames.com/decrypto/game-rules.php"
+            style={{ cursor: "pointer" }}
+            target="_blank"
+          >
             here
           </a>
         </span>
