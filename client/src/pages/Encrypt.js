@@ -107,7 +107,7 @@ export default function Encrypt() {
           ) : (
             <div className="container mt-4">Waiting for Encryption...</div>
           )}
-          <ChatRoom />
+          <ChatRoom disabledUsers={[]} />
         </div>
       )}
     </>

@@ -3,8 +3,10 @@ import axios from "../api/axios";
 import useUser from "../hooks/useUser";
 import { chatSocket } from "../api/socket";
 import convertTime from "../utils/convertTime";
+import ScrollToBottom from "react-scroll-to-bottom";
+import "../styles/chatroom.css";
 
-export default function ChatRoom() {
+export default function ChatRoom({ disabledUsers }) {
   const { user } = useUser();
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
@@ -74,10 +76,7 @@ export default function ChatRoom() {
     <>
       <div className="container p-2 border border-dark mt-5">
         <div className="col text-center border-bottom mb-1">Chat Room</div>
-        <div
-          className="container overflow-scroll p-0"
-          style={{ height: "300px", width: "100%" }}
-        >
+        <ScrollToBottom className="chat-box">
           {messages.map((message) => (
             <div
               className="row ms-1 me-1"
@@ -98,7 +97,7 @@ export default function ChatRoom() {
               )}
             </div>
           ))}
-        </div>
+        </ScrollToBottom>
         <div className="row">
           <div className="col">
             <form onSubmit={handleSendMessage}>
@@ -112,8 +111,13 @@ export default function ChatRoom() {
                   onChange={(e) => setMessage(e.target.value)}
                   required
                   autoComplete="off"
+                  disabled={disabledUsers.includes(user.player) ? true : false}
                 />
-                <button type="submit" className="btn btn-outline-secondary">
+                <button
+                  type="submit"
+                  className="btn btn-outline-secondary"
+                  disabled={disabledUsers.includes(user.player) ? true : false}
+                >
                   Send
                 </button>
               </div>

@@ -26,6 +26,17 @@ export default function Encryptor({ code, words, round, checkSubmitted }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Check clues are single string of characters only
+    const stringCheck = /^[a-zA-Z]+$/;
+    if (
+      !one.match(stringCheck) ||
+      !two.match(stringCheck) ||
+      !three.match(stringCheck)
+    ) {
+      alert("Clues must be single words only");
+      return;
+    }
+
     try {
       const response = await axios.post(
         `/game/postclue`,

@@ -84,7 +84,7 @@ export default function Intercept() {
             round={round}
             checkSubmitted={checkSubmitted}
           />
-          <ChatRoom />
+          <ChatRoom disabledUsers={[]} />
         </>
       )}
     </div>

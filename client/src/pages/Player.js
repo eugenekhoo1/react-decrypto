@@ -208,7 +208,7 @@ export default function Player() {
               </div>
             </div>
           </div>
-          {user ? <ChatRoom /> : null}
+          {user ? <ChatRoom disabledUsers={[]} /> : null}
         </>
       ) : gameStatus === "In Progress" ? (
         <Navigate to={`/encrypt/${gid}`} replace={true} />

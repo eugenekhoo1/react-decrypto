@@ -18,6 +18,7 @@ export default function Decode() {
   const [words, setWords] = useState({ team1: [], team2: [] });
   const [clue, setClue] = useState({ team1: {}, team2: {} });
   const [decoder, setDecoder] = useState([]);
+  const [encryptor, setEncryptor] = useState([]);
 
   useEffect(() => {
     joinGameRoom(user.gid);
@@ -41,6 +42,10 @@ export default function Decode() {
   const getRoundInfo = async () => {
     const response = await axios.get(`/game/getround/${user.gid}`);
     setDecoder([response.data[0].decoder, response.data[1].decoder]);
+    setEncryptor([
+      players.team1[response.data[0].encryptor - 1],
+      players.team2[response.data[1].encryptor - 1],
+    ]);
     setRound(response.data[0].round);
     setClue({
       team1: response.data[0].clue,
@@ -101,7 +106,7 @@ export default function Decode() {
             round={round}
             checkSubmitted={checkSubmitted}
           />
-          <ChatRoom />
+          <ChatRoom disabledUsers={encryptor} />
         </>
       )}
     </div>
