@@ -6,6 +6,7 @@ const credentials = require("./middleware/credentials");
 const gameRoutes = require("./routes/gameRoutes");
 const playerRoutes = require("./routes/playerRoutes");
 const viewRoutes = require("./routes/viewRoutes");
+const chatRoutes = require("./routes/chatRoutes");
 const http = require("http");
 const { Server } = require("socket.io");
 
@@ -18,11 +19,15 @@ app.use(express.json());
 app.use("/game", gameRoutes);
 app.use("/player", playerRoutes);
 app.use("/view", viewRoutes);
+app.use("/chat", chatRoutes);
 
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: { origin: "*" },
 });
+
+const gameNamespace = io.of("/game");
+const chatNamespace = io.of("/chat");
 
 const clueStatus = {
   team1: false,
@@ -36,7 +41,7 @@ const responseStatus = {
   team2: false,
 };
 
-io.on("connection", (socket) => {
+gameNamespace.on("connection", (socket) => {
   socket.on("join-room", (data) => {
     // Joins room and leaves all other rooms
     socket.join(data.gid);
@@ -110,7 +115,7 @@ io.on("connection", (socket) => {
     console.log(`checking clue`);
     if (clueStatus.team1 && clueStatus.team2) {
       console.log(`received-clues`);
-      io.to(gid).emit("received-clues", clueStatus);
+      gameNamespace.to(gid).emit("received-clues", clueStatus);
       clueStatus.team1 = false;
       clueStatus.team2 = false;
     }
@@ -120,7 +125,7 @@ io.on("connection", (socket) => {
     console.log(`checking intercept`);
     if (scoreStatus.score < 2 && responseStatus.team1 && responseStatus.team2) {
       console.log(`received-intercept`);
-      io.to(gid).emit("received-intercept");
+      gameNamespace.to(gid).emit("received-intercept");
       responseStatus.team1 = false;
       responseStatus.team2 = false;
       scoreStatus.score = 0;
@@ -130,7 +135,7 @@ io.on("connection", (socket) => {
   const checkDecodeAndEmit = (gid) => {
     console.log(`checking decode`);
     if (scoreStatus.score < 2 && responseStatus.team1 && responseStatus.team2) {
-      io.to(gid).emit("received-decode");
+      gameNamespace.to(gid).emit("received-decode");
       responseStatus.team1 = false;
       responseStatus.team2 = false;
       scoreStatus.score = 0;
@@ -139,11 +144,32 @@ io.on("connection", (socket) => {
 
   const endGame = (gid) => {
     console.log(`ending game`);
-    io.to(gid).emit("received-end-game");
+    gameNamespace.to(gid).emit("received-end-game");
     responseStatus.team1 = false;
     responseStatus.team2 = false;
     scoreStatus.score = 0;
   };
+});
+
+chatNamespace.on("connection", (socket) => {
+  socket.on("join-room", (data) => {
+    socket.join(`${data.game_id}-${data.team}`);
+    socket.rooms.forEach((room) => {
+      if (/^\d+-\d+$/.test(room) && room !== `${data.game_id}-${data.team}`) {
+        socket.leave(room);
+      }
+    });
+    console.log(
+      `${socket.id} has joined chat room ${data.game_id}-${data.team}`
+    );
+  });
+
+  socket.on("send-message", (data) => {
+    console.log(`received-send-message:`, data);
+    socket
+      .to(`${data.game_id}-${data.team}`)
+      .emit("received-send-message", data);
+  });
 });
 
 server.listen(PORT, () => console.log(`Listening on port ${PORT}...`));

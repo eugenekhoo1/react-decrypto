@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { Navigate, useParams, useNavigate } from "react-router-dom";
 import axios from "../api/axios";
-import socket from "../api/socket";
+import { gameSocket } from "../api/socket";
 import "../styles/player.css";
 import useUser from "../hooks/useUser";
-import JoinRoom from "../utils/JoinRoom";
+import joinGameRoom from "../utils/joinGameRoom";
 import PlayerList from "../cards/PlayerList";
+import joinChatRoom from "../utils/joinChatRoom";
+import ChatRoom from "../components/ChatRoom";
 
 export default function Player() {
   const { gid } = useParams();
@@ -19,16 +21,16 @@ export default function Player() {
   const [gameStatus, setGameStatus] = useState(null);
 
   useEffect(() => {
-    JoinRoom(gid);
+    joinGameRoom(gid);
     getGameInfo();
   }, []);
 
   useEffect(() => {
-    socket.on("received-start-game", (data) => {
+    gameSocket.on("received-start-game", (data) => {
       navigate(`/encrypt/${data.gid}`);
     });
 
-    socket.on("received-add-player", (data) => {
+    gameSocket.on("received-add-player", (data) => {
       if (data.team === 1) {
         setTeam1Players((prevTeam1Players) => [
           ...prevTeam1Players,
@@ -43,10 +45,10 @@ export default function Player() {
     });
 
     return () => {
-      socket.off("received-start-game");
-      socket.off("received-add-player");
+      gameSocket.off("received-start-game");
+      gameSocket.off("received-add-player");
     };
-  }, [socket]);
+  }, [gameSocket]);
 
   const getGameInfo = async () => {
     const response = await axios.get(`/game/getgame/${gid}`);
@@ -79,7 +81,7 @@ export default function Player() {
 
     setUser({ player, team, gid });
     sessionStorage.setItem("user", JSON.stringify({ player, team, gid }));
-    socket.emit("join-room", {
+    gameSocket.emit("join-room", {
       gid: gid,
       player: player,
       team: team,
@@ -90,7 +92,8 @@ export default function Player() {
     } else {
       setTeam2Players([...team2Players, player]);
     }
-    socket.emit(`add-player`, { gid, player, team });
+    gameSocket.emit(`add-player`, { gid, player, team });
+    joinChatRoom(gid, team);
   };
 
   const handleStart = async (e) => {
@@ -102,7 +105,7 @@ export default function Player() {
         JSON.stringify({ gid }),
         { headers: { "Content-Type": "application/json" } }
       );
-      socket.emit("start-game", { gid });
+      gameSocket.emit("start-game", { gid });
       navigate(`/encrypt/${gid}`);
     } catch (err) {
       alert(err.response.data.message);
@@ -112,92 +115,97 @@ export default function Player() {
   return (
     <>
       {gameStatus === "Not Started" ? (
-        <div className="container mt-4">
-          <div className="container">
-            <div className="row justify-content-center">Game ID: {gid}</div>
-            <form onSubmit={handleSubmit}>
-              <div className="row justify-content-center">
-                <div className="col-7 col-md-3">
-                  <div className="player-name">
-                    <span>Player Name: </span>
-                    <input
-                      type="text"
-                      id="name"
-                      autoComplete="off"
-                      required
-                      onChange={(e) => {
-                        setPlayer(e.target.value);
+        <>
+          <div className="container mt-4">
+            <div className="container">
+              <div className="row justify-content-center">Game ID: {gid}</div>
+              <form onSubmit={handleSubmit}>
+                <div className="row justify-content-center">
+                  <div className="col-7 col-md-3">
+                    <div className="player-name">
+                      <span>Player Name: </span>
+                      <input
+                        type="text"
+                        id="name"
+                        autoComplete="off"
+                        required
+                        onChange={(e) => {
+                          setPlayer(e.target.value);
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="row justify-content-center">
+                  <div className="player-name-header">Team</div>
+
+                  <div className="col-3 col-md-1 p-0">
+                    <div
+                      className={
+                        team === 1
+                          ? "team-toggle-item-selected"
+                          : "team-toggle-item"
+                      }
+                      onClick={() => {
+                        setTeam(1);
                       }}
-                    />
+                    >
+                      1
+                    </div>
+                  </div>
+                  <div className="col-3 col-md-1 p-0">
+                    <div
+                      className={
+                        team === 2
+                          ? "team-toggle-item-selected"
+                          : "team-toggle-item"
+                      }
+                      onClick={() => {
+                        setTeam(2);
+                      }}
+                    >
+                      2
+                    </div>
                   </div>
                 </div>
-              </div>
 
+                <div className="player-submit">
+                  <button
+                    type="submit"
+                    disabled={
+                      user && user.gid === gid.toString() ? true : false
+                    }
+                  >
+                    Submit
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <div className="container">
               <div className="row justify-content-center">
-                <div className="player-name-header">Team</div>
-
-                <div className="col-3 col-md-1 p-0">
-                  <div
-                    className={
-                      team === 1
-                        ? "team-toggle-item-selected"
-                        : "team-toggle-item"
-                    }
-                    onClick={() => {
-                      setTeam(1);
-                    }}
-                  >
-                    1
-                  </div>
-                </div>
-                <div className="col-3 col-md-1 p-0">
-                  <div
-                    className={
-                      team === 2
-                        ? "team-toggle-item-selected"
-                        : "team-toggle-item"
-                    }
-                    onClick={() => {
-                      setTeam(2);
-                    }}
-                  >
-                    2
-                  </div>
+                <div className="col-10 col-md-5">
+                  <PlayerList players={team1Players} team={1} gid={gid} />
                 </div>
               </div>
-
-              <div className="player-submit">
-                <button
-                  type="submit"
-                  disabled={user && user.gid === gid.toString() ? true : false}
-                >
-                  Submit
-                </button>
+              <div className="row justify-content-center">
+                <div className="col-10 col-md-5">
+                  <PlayerList players={team2Players} team={2} gid={gid} />
+                </div>
               </div>
-            </form>
-          </div>
+            </div>
 
-          <div className="container">
             <div className="row justify-content-center">
-              <div className="col-10 col-md-5">
-                <PlayerList players={team1Players} team={1} gid={gid} />
-              </div>
-            </div>
-            <div className="row justify-content-center">
-              <div className="col-10 col-md-5">
-                <PlayerList players={team2Players} team={2} gid={gid} />
+              <div className="col-3 col-md-2">
+                <div className="start-button" onClick={handleStart}>
+                  Start
+                </div>
               </div>
             </div>
           </div>
-
-          <div className="row justify-content-center">
-            <div className="col-3 col-md-2">
-              <div className="start-button" onClick={handleStart}>
-                Start
-              </div>
-            </div>
-          </div>
-        </div>
+          {user ? <ChatRoom /> : null}
+        </>
       ) : gameStatus === "In Progress" ? (
         <Navigate to={`/encrypt/${gid}`} replace={true} />
       ) : gameStatus === "Completed" ? (

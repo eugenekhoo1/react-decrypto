@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../api/axios";
-import socket from "../api/socket";
+import { gameSocket } from "../api/socket";
 import useUser from "../hooks/useUser";
 
 export default function Encryptor({ code, words, round, checkSubmitted }) {
@@ -18,10 +18,10 @@ export default function Encryptor({ code, words, round, checkSubmitted }) {
   }, [one, two, three]);
 
   useEffect(() => {
-    socket.on("received-clues", () => {
+    gameSocket.on("received-clues", () => {
       navigate(`/decode/${user.gid}`);
     });
-  }, [socket]);
+  }, [gameSocket]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,7 +33,7 @@ export default function Encryptor({ code, words, round, checkSubmitted }) {
         { headers: { "Content-Type": "application/json" } }
       );
       setSubmitted(true);
-      socket.emit("clue-submitted", { gid: user.gid, team: user.team });
+      gameSocket.emit("clue-submitted", { gid: user.gid, team: user.team });
     } catch (err) {
       console.error(err);
     }

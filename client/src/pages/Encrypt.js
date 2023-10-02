@@ -3,11 +3,13 @@ import { Navigate, useNavigate } from "react-router-dom";
 import Encryptor from "../components/Encryptor";
 import useUser from "../hooks/useUser";
 import axios from "../api/axios";
-import socket from "../api/socket";
+import { gameSocket } from "../api/socket";
 import TeamClues from "../cards/TeamClues";
 import Header from "../components/Header";
 import Scoreboard from "../cards/Scoreboard";
-import JoinRoom from "../utils/JoinRoom";
+import joinGameRoom from "../utils/joinGameRoom";
+import joinChatRoom from "../utils/joinChatRoom";
+import ChatRoom from "../components/ChatRoom";
 
 export default function Encrypt() {
   const { user } = useUser();
@@ -23,7 +25,8 @@ export default function Encrypt() {
   const [teamClues, setTeamClues] = useState([]);
 
   useEffect(() => {
-    JoinRoom(user.gid);
+    joinGameRoom(user.gid);
+    joinChatRoom(user.gid, user.team);
     getGameInfo();
     getRoundInfo();
     getClues();
@@ -31,10 +34,10 @@ export default function Encrypt() {
   }, []);
 
   useEffect(() => {
-    socket.on("received-clues", () => {
+    gameSocket.on("received-clues", () => {
       navigate(`/decode/${user.gid}`);
     });
-  }, [socket]);
+  }, [gameSocket]);
 
   const getGameInfo = async () => {
     const response = await axios.get(`/game/getgame/${user.gid}`);
@@ -104,6 +107,7 @@ export default function Encrypt() {
           ) : (
             <div className="container mt-4">Waiting for Encryption...</div>
           )}
+          <ChatRoom />
         </div>
       )}
     </>

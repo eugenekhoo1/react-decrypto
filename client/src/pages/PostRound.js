@@ -1,25 +1,25 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../api/axios";
-import socket from "../api/socket";
+import { gameSocket } from "../api/socket";
 import Scoreboard from "../cards/Scoreboard";
 import Header from "../components/Header";
 import useUser from "../hooks/useUser";
-import JoinRoom from "../utils/JoinRoom";
+import joinGameRoom from "../utils/joinGameRoom";
 
 export default function PostRound() {
   const { user } = useUser();
   const navigate = useNavigate();
 
   useEffect(() => {
-    JoinRoom(user.gid);
+    joinGameRoom(user.gid);
   }, []);
 
   useEffect(() => {
-    socket.on("received-next-round", (data) => {
+    gameSocket.on("received-next-round", (data) => {
       navigate(`/encrypt/${data.gid}`);
     });
-  }, [socket]);
+  }, [gameSocket]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -30,7 +30,7 @@ export default function PostRound() {
         JSON.stringify({ gid: user.gid }),
         { headers: { "Content-Type": "application/json" } }
       );
-      socket.emit("next-round", { gid: user.gid });
+      gameSocket.emit("next-round", { gid: user.gid });
       navigate(`/encrypt/${user.gid}`);
     } catch (err) {
       console.error(err);

@@ -16,6 +16,8 @@ export default function Landing() {
   const handleNewGame = async (e) => {
     e.preventDefault();
 
+    setUser(null);
+    sessionStorage.setItem("user", null);
     try {
       const response = await axios.get(`/game/newgame`);
       navigate(`/addplayer/${response.data[0].game_id}`);
@@ -33,6 +35,8 @@ export default function Landing() {
       return;
     }
     if (response.data[0].status === "Not Started") {
+      setUser(null);
+      sessionStorage.setItem("user", null);
       navigate(`/addplayer/${gameId}`);
     } else if (response.data[0].status === "Completed") {
       alert("Game has already been completed");

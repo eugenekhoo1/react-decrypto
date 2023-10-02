@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useUser from "../hooks/useUser";
 import axios from "../api/axios";
-import socket from "../api/socket";
+import { gameSocket } from "../api/socket";
 
 export default function Clue({
   type,
@@ -28,22 +28,22 @@ export default function Clue({
   }, [clue1, clue2, clue3]);
 
   useEffect(() => {
-    socket.on("received-intercept", () => {
+    gameSocket.on("received-intercept", () => {
       navigate(`/postround/${user.gid}`);
     });
-  }, [socket]);
+  }, [gameSocket]);
 
   useEffect(() => {
-    socket.on("received-decode", () => {
+    gameSocket.on("received-decode", () => {
       navigate(`/intercept/${user.gid}`);
     });
-  }, [socket]);
+  }, [gameSocket]);
 
   useEffect(() => {
-    socket.on("received-end-game", () => {
+    gameSocket.on("received-end-game", () => {
       navigate(`/postgame/${user.gid}`);
     });
-  }, [socket]);
+  }, [gameSocket]);
 
   const handleResponse = async (e) => {
     e.preventDefault();
@@ -73,7 +73,7 @@ export default function Clue({
       );
       setResponseSubmitted(true);
       alert(submitResponse.data.message);
-      socket.emit(event, {
+      gameSocket.emit(event, {
         gid: user.gid,
         team: user.team,
         score: submitResponse.data.score,

@@ -5,7 +5,9 @@ import Clue from "../components/Clue";
 import useUser from "../hooks/useUser";
 import Header from "../components/Header";
 import Scoreboard from "../cards/Scoreboard";
-import JoinRoom from "../utils/JoinRoom";
+import joinGameRoom from "../utils/joinGameRoom";
+import joinChatRoom from "../utils/joinChatRoom";
+import ChatRoom from "../components/ChatRoom";
 
 export default function Decode() {
   const { user } = useUser();
@@ -18,7 +20,8 @@ export default function Decode() {
   const [decoder, setDecoder] = useState([]);
 
   useEffect(() => {
-    JoinRoom(user.gid);
+    joinGameRoom(user.gid);
+    joinChatRoom(user.gid, user.team);
     getGameInfo();
     getRoundInfo();
   }, []);
@@ -98,6 +101,7 @@ export default function Decode() {
             round={round}
             checkSubmitted={checkSubmitted}
           />
+          <ChatRoom />
         </>
       )}
     </div>

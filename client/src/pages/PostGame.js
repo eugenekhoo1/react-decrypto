@@ -1,24 +1,24 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../api/axios";
-import socket from "../api/socket";
+import { gameSocket } from "../api/socket";
 import useUser from "../hooks/useUser";
 import Scoreboard from "../cards/Scoreboard";
-import JoinRoom from "../utils/JoinRoom";
+import joinGameRoom from "../utils/joinGameRoom";
 
 export default function PostGame() {
   const { user } = useUser();
   const navigate = useNavigate();
 
   useEffect(() => {
-    JoinRoom(user.gid);
+    joinGameRoom(user.gid);
   }, []);
 
   useEffect(() => {
-    socket.on("received-complete-game", (data) => {
+    gameSocket.on("received-complete-game", (data) => {
       navigate(`/`);
     });
-  }, [socket]);
+  }, [gameSocket]);
 
   const handleEndGame = async (e) => {
     e.preventDefault();
@@ -30,7 +30,7 @@ export default function PostGame() {
       }),
       { headers: { "Content-Type": "application/json" } }
     );
-    socket.emit("complete-game", { gid: user.gid });
+    gameSocket.emit("complete-game", { gid: user.gid });
     navigate(`/`);
   };
 
