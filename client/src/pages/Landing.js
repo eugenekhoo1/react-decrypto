@@ -77,6 +77,15 @@ export default function Landing() {
         <img className="logo" src={logo} alt="logo" />
       </div>
 
+      <div className="row mt-3">
+        <span className="text-center">
+          Learn how to play{" "}
+          <a href="https://www.ultraboardgames.com/decrypto/game-rules.php">
+            here
+          </a>
+        </span>
+      </div>
+
       <div className="row justify-content-center mt-3">
         Enter game ID to join an existing game
       </div>
