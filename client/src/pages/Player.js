@@ -183,6 +183,10 @@ export default function Player() {
               </form>
             </div>
 
+            <div className="row justify-content-center fst-italic mt-3">
+              Minimum 2 players on each team to start
+            </div>
+
             <div className="container">
               <div className="row justify-content-center">
                 <div className="col-10 col-md-5">
