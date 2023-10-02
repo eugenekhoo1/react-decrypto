@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "../api/axios";
 import useUser from "../hooks/useUser";
 import "../styles/landing.css";
-import logo from "../img/logo.png";
+import logo from "../assets/img/logo.png";
 
 export default function Landing() {
   const { setUser } = useUser();
