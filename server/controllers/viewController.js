@@ -20,7 +20,7 @@ async function getClues(req, res) {
     } else if (type === "intercept") {
       const oppTeamCluesResponse = await query(
         `
-        SELECT clue FROM logs WHERE game_id=$1 AND team=$2 ORDER BY round
+        SELECT clue, team${oppTeam}_response FROM logs WHERE game_id=$1 AND team=$2 ORDER BY round
         `,
         [gid, oppTeam]
       );
