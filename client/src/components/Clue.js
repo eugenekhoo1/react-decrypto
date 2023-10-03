@@ -10,6 +10,7 @@ export default function Clue({
   responder,
   round,
   checkSubmitted,
+  code,
 }) {
   const { user } = useUser();
   const navigate = useNavigate();
@@ -21,9 +22,9 @@ export default function Clue({
 
   useEffect(() => {
     setResponse({
-      [clue1]: Object.values(clues)[0],
-      [clue2]: Object.values(clues)[1],
-      [clue3]: Object.values(clues)[2],
+      [clue1]: clues[code[0]],
+      [clue2]: clues[code[1]],
+      [clue3]: clues[code[2]],
     });
   }, [clue1, clue2, clue3]);
 
@@ -96,7 +97,7 @@ export default function Clue({
         </div>
         <div className="row mt-2">
           <div className="col">
-            {Object.values(clues)[0]}{" "}
+            {clues[code[0]]}{" "}
             <input
               type="number"
               id="clue1"
@@ -117,7 +118,7 @@ export default function Clue({
         </div>
         <div className="row mt-2">
           <div className="col">
-            {Object.values(clues)[1]}{" "}
+            {clues[code[1]]}{" "}
             <input
               type="number"
               id="clue2"
@@ -138,7 +139,7 @@ export default function Clue({
         </div>
         <div className="row mt-2">
           <div className="col">
-            {Object.values(clues)[2]}{" "}
+            {clues[code[2]]}{" "}
             <input
               type="number"
               id="clue3"

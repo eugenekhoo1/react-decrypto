@@ -19,6 +19,8 @@ export default function Intercept() {
   const [clue, setClue] = useState({ team1: {}, team2: {} });
   const [interceptor, setInterceptor] = useState([]);
   const [oppTeamClues, setOppTeamClues] = useState([]);
+  const [oppTeamResponses, setOppTeamResponses] = useState([]);
+  const [code, setCode] = useState({ team1: [], team2: [] });
 
   useEffect(() => {
     joinGameRoom(user.gid);
@@ -47,6 +49,10 @@ export default function Intercept() {
       team1: response.data[0].clue,
       team2: response.data[1].clue,
     });
+    setCode({
+      team1: response.data[0].code,
+      team2: response.data[1].code,
+    });
 
     // Checks submitted responses if refresh
     if (response.data[0].team2_response && response.data[1].team1_response) {
@@ -72,7 +78,7 @@ export default function Intercept() {
         <>
           <Header user={user} />
           <Scoreboard />
-          <OppTeamClues clues={oppTeamClues} />
+          <OppTeamClues clues={oppTeamClues} team={user.team} />
           <Clue
             type={"intercept"}
             clues={user.team === 1 ? clue.team2 : clue.team1}
@@ -83,6 +89,7 @@ export default function Intercept() {
             }
             round={round}
             checkSubmitted={checkSubmitted}
+            code={user.team === 1 ? code.team2 : code.team1}
           />
           <ChatRoom disabledUsers={[]} />
         </>

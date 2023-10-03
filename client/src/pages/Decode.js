@@ -19,6 +19,7 @@ export default function Decode() {
   const [clue, setClue] = useState({ team1: {}, team2: {} });
   const [decoder, setDecoder] = useState([]);
   const [encryptor, setEncryptor] = useState([]);
+  const [code, setCode] = useState({ team1: [], team2: [] });
 
   useEffect(() => {
     joinGameRoom(user.gid);
@@ -50,6 +51,10 @@ export default function Decode() {
     setClue({
       team1: response.data[0].clue,
       team2: response.data[1].clue,
+    });
+    setCode({
+      team1: response.data[0].code,
+      team2: response.data[1].code,
     });
 
     // Checks submitted responses if refresh
@@ -105,6 +110,7 @@ export default function Decode() {
             }
             round={round}
             checkSubmitted={checkSubmitted}
+            code={user.team === 1 ? code.team1 : code.team2}
           />
           <ChatRoom disabledUsers={encryptor} />
         </>
