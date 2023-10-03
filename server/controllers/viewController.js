@@ -25,7 +25,7 @@ async function getClues(req, res) {
         [gid, oppTeam]
       );
       return res.status(200).json({
-        oppTeamClues: oppTeamCluesResponse.rows.slice(0, -1),
+        oppTeamClues: oppTeamCluesResponse.rows,
       });
     }
   } catch (err) {
